@@ -1,4 +1,5 @@
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Main {
@@ -15,6 +16,9 @@ public class Main {
                 switch (eleccion) {
                     case 1:
                         registrar(user);
+                        break;
+                    case 2:
+                        cargarUsuarios();
                         break;
                 }
 
@@ -67,20 +71,25 @@ public class Main {
         }
     }
 
-    private static void ShowGames() {
+    private static void cargarUsuarios() {
+
         BufferedReader reader = null;
-        Usuario user = new Usuario();
+
+        ArrayList<Usuario> mmg = new ArrayList<>();
 
         try {
-            reader = new BufferedReader(new FileReader("admin/user.txt"));
+            reader = new BufferedReader(new FileReader("ADMIN/users.txt"));
             String line;
-            File f = new File("admin/user.txt");
+            File f = new File("ADMIN/users.txt");
             String absolute = f.getAbsolutePath();
             FileReader fr = new FileReader(absolute);
             BufferedReader br = new BufferedReader(fr);
+            int mmgg = (int) br.lines().count();
 
-            while (br.readLine() != null) {
+
+            for (int i = 0; i < mmgg; i++) {
                 while ((line = reader.readLine()) != null) {
+                    Usuario user = new Usuario();
                     String[] fields = line.split(":");
                     user.usuario = fields[0];
                     user.contra = fields[1];
@@ -88,19 +97,14 @@ public class Main {
                     user.apellido = fields[3];
                     user.cuenta = fields[4];
                     user.email = fields[5];
+                    mmg.add(user);
+
                 }
             }
+            reader.close();
 
         } catch (IOException e) {
             e.printStackTrace();
-        } finally {
-            try {
-                if (reader != null) {
-                    reader.close();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
     }
 
