@@ -87,10 +87,7 @@ public class Main {
                     user.nombre = fields[2];
                     user.apellido = fields[3];
                     user.cuenta = fields[4];
-                    user.contra = fields[5];
-
-                    Frase = (Separador + GameName + PriceG + PriceTP + Cash);
-                    System.out.println(Frase);
+                    user.email = fields[5];
                 }
             }
 
