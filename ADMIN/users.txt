@@ -1,5 +1,2 @@
-qw:qw:qw:qw:ESqw:qw:70
-sd:sd:sd:sd:ESsd:sd:0
-fgfg:fg:fg:fg:ESfg:fg:0
-r:r:r:r:ESr:r:0
-cv:w:cv:cv:EScv:cv:0
+qw:w:qw:qw:qw:qw:0
+df:w:df:df:df:df:0

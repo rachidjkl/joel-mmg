@@ -63,41 +63,43 @@ public class Main {
     }
 
     private static Usuario iniciarSesion(ArrayList<Usuario> listUser) {
-        boolean log = false;
-        int i = 0;
+        boolean log = true;
         Usuario userlog = new Usuario();
         Scanner sc = new Scanner(System.in);
-        System.out.println("Introduce tu nombre de usuario");
-        String user = sc.nextLine();
-        System.out.println("Introduce tu contraseña");
-        String contra = sc.nextLine();
-        while (i<listUser.size() && log == true){
-            if (user.equals(listUser.get(i).usuario)) {
-                if (contra.equals(listUser.get(i).contra)){
-                    userlog = listUser.get(i);
-                    log = true;
+        do{
+            System.out.println("Introduce tu nombre de usuario");
+            String user = sc.nextLine();
+            System.out.println("Introduce tu contraseña");
+            String contra = sc.nextLine();
+            for (int i=0;i<listUser.size();i++){
+                if (user.equals(listUser.get(i).usuario)) {
+                    if (contra.equals(listUser.get(i).contra)){
+                        userlog = listUser.get(i);
+                        log = false;
+                    }
+                    System.out.println("Usuario o contraseña incorrectos");
                 }
             }
-            i++;
-        }
+        }while (log == true);
         return userlog;
     }
 
     private static void gestionarSaldo(Usuario userLog, ArrayList<Usuario> listUser) {
 
         Scanner sc = new Scanner(System.in);
-        Iterator<Usuario> it = listUser.iterator();
-        while (it.hasNext()) {
-            Usuario item = it.next();
-            if (item.equals(userLog)) {
-                it.remove();
-            }
-        }
+        int i = 0;
         System.out.println("tu saldo es: "+ userLog.saldo);
         System.out.println("cuantos quieres añadir:" );
         int saldoSumar = sc.nextInt();
-        userLog.saldo = userLog.saldo + saldoSumar;
-        listUser.add(userLog);
+        Iterator<Usuario> it = listUser.iterator();
+        while (i<listUser.size()) {
+            if (listUser.get(i).usuario.equals(userLog.usuario)) {
+                listUser.get(i).saldo = listUser.get(i).saldo + saldoSumar;
+            }
+            i++;
+        }
+        guardarTxt(listUser);
+
     }
 
     private static void registrar(Usuario user, ArrayList<Usuario> listUser) {
@@ -121,8 +123,8 @@ public class Main {
             user.email = sc.nextLine();
             contin = comprovacion(user, listUser);
         } while (contin);
-        guardarTxt(user);
         listUser.add(user);
+        guardarTxt(listUser);
     }
 
     private static boolean comprovacion(Usuario user, ArrayList<Usuario> listUser ) {
@@ -151,13 +153,17 @@ public class Main {
         return "w";
     }
 
-    private static void guardarTxt(Usuario user) {
+    private static void guardarTxt(ArrayList<Usuario> listUser) {
 
         try {
             FileWriter writer = new FileWriter("ADMIN/users.txt", true);
-            writer.write(user.usuario + ":" + user.contra + ":" + user.nombre + ":" + user.apellido + ":" + "ES" + user.cuenta + ":" + user.email + ":0" + "\n");
+            for (int i=0; i< listUser.size(); i++){
+                writer.write(listUser.get(i).usuario + ":" + listUser.get(i).contra + ":" + listUser.get(i).nombre + ":" + listUser.get(i).apellido + ":" + listUser.get(i).cuenta + ":" + listUser.get(i).email + ":0" + "\n");
+            }
             writer.close();
             System.out.println("Usuario guardado");
+
+
         } catch (Exception e) {
             System.out.println("Error al guardar el usuario");
         }
@@ -165,7 +171,7 @@ public class Main {
 
     private static void cargarUsuarios(ArrayList<Usuario> listUser) {
 
-        BufferedReader reader = null;
+        BufferedReader reader;
         try {
             reader = new BufferedReader(new FileReader("ADMIN/users.txt"));
             String line;
