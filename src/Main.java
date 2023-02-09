@@ -19,7 +19,7 @@ public class Main {
             {
                 switch (eleccion) {
                     case 1:
-                        registrar(user, listUser);
+                        registrar(listUser);
                         break;
                     case 2:
                         menuAcc(listUser);
@@ -73,14 +73,14 @@ public class Main {
             String contra = sc.nextLine();
             for (int i=0;i<listUser.size();i++){
                 if (user.equals(listUser.get(i).usuario)) {
-                    if (contra.equals(listUser.get(i).contra)){
+                    if (BlowFish.comparePasswords(contra, listUser.get(i).contra)){
                         userlog = listUser.get(i);
                         log = false;
                     }
                     System.out.println("Usuario o contraseña incorrectos");
                 }
             }
-        }while (log == true);
+        }while (log);
         return userlog;
     }
 
@@ -91,7 +91,6 @@ public class Main {
         System.out.println("tu saldo es: "+ userLog.saldo);
         System.out.println("cuantos quieres añadir:" );
         int saldoSumar = sc.nextInt();
-        Iterator<Usuario> it = listUser.iterator();
         while (i<listUser.size()) {
             if (listUser.get(i).usuario.equals(userLog.usuario)) {
                 listUser.get(i).saldo = listUser.get(i).saldo + saldoSumar;
@@ -102,9 +101,10 @@ public class Main {
 
     }
 
-    private static void registrar(Usuario user, ArrayList<Usuario> listUser) {
+    private static void registrar(ArrayList<Usuario> listUser) {
 
         boolean contin;
+        Usuario user = new Usuario();
         Scanner sc = new Scanner(System.in);
         do {
             System.out.println("Nombre de usuario:");
@@ -123,7 +123,6 @@ public class Main {
             user.email = sc.nextLine();
             contin = comprovacion(user, listUser);
         } while (contin);
-        listUser.add(user);
         guardarTxt(listUser);
     }
 
@@ -134,9 +133,9 @@ public class Main {
             cont = true;
             System.out.println("las contraseñas no coinciden");
         }else {
-            user.contra = encriptar();
+            user.contra = BlowFish.encrypt(user.contra);
         }
-        for (int i=0;i<listUser.size() && cont == false;i++){
+        for (int i = 0; i<listUser.size() && !cont; i++){
             if (user.usuario.equals(listUser.get(i).usuario)) {
                 cont = true;
                 System.out.println("Usuario existente");
@@ -146,23 +145,23 @@ public class Main {
                 System.out.println("Email existente");
             }
         }
+        listUser.add(user);
         return cont;
     }
 
-    private static String encriptar() {
-        return "w";
-    }
 
     private static void guardarTxt(ArrayList<Usuario> listUser) {
 
         try {
             FileWriter writer = new FileWriter("ADMIN/users.txt", true);
+            FileOutputStream writerr = new FileOutputStream("ADMIN/users.txt");
+            writerr.write(new byte[0]);
+            writer.close();
             for (int i=0; i< listUser.size(); i++){
-                writer.write(listUser.get(i).usuario + ":" + listUser.get(i).contra + ":" + listUser.get(i).nombre + ":" + listUser.get(i).apellido + ":" + listUser.get(i).cuenta + ":" + listUser.get(i).email + ":0" + "\n");
+                writerr.write((listUser.get(i).usuario + ":" + listUser.get(i).contra + ":" + listUser.get(i).nombre + ":" + listUser.get(i).apellido + ":" + listUser.get(i).cuenta + ":" + listUser.get(i).email + ":"+ + listUser.get(i).saldo+"\n").getBytes());
             }
             writer.close();
             System.out.println("Usuario guardado");
-
 
         } catch (Exception e) {
             System.out.println("Error al guardar el usuario");
