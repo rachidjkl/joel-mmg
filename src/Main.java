@@ -9,7 +9,9 @@ public class Main {
 
         Usuario user = new Usuario();
         ArrayList<Usuario> listUser = new ArrayList<>();
+        ArrayList<Game> listGame = new ArrayList<>();
         cargarUsuarios(listUser);
+        cargarGame(listGame);
         int eleccion;
 
         do {
@@ -30,6 +32,30 @@ public class Main {
                 }
             }
         } while (eleccion != 0);
+    }
+
+    private static void cargarGame(ArrayList<Game> listGame) {
+        try {
+            BufferedReader  reader = new BufferedReader(new FileReader("ADMIN/games.txt"));
+            String line;
+            File f = new File("ADMIN/games.txt");
+            String absolute = f.getAbsolutePath();
+            FileReader fr = new FileReader(absolute);
+            BufferedReader br = new BufferedReader(fr);
+            for (int i = 0; i < br.lines().count(); i++) {
+                while ((line = reader.readLine()) != null) {
+                    Game game = new Game();
+                    String[] fields = line.split(":");
+                    game.nombre = fields[0];
+                    game.precio = Float.parseFloat(fields[1]);
+                    game.precioTa = Float.parseFloat(fields[2]);
+                    listGame.add(game);
+                }
+            }
+            reader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private static void menuAcc(ArrayList<Usuario> listUser) {
