@@ -45,24 +45,26 @@ public class Main2 {
 
     private static String comprobarUsuario() {
         Scanner sc = new Scanner(System.in);
+        String usuario = "";
         try (BufferedReader reader = new BufferedReader(new FileReader("ADMIN/users.txt"))) {
             String line;
-            String[] parts = new String[]
+            String[] parts = null;
             while ((line = reader.readLine()) != null) {
                 parts = line.split(":");
             }
             int i=0;
             boolean cont = true;
-            while ( i< parts.length && cont){
+            while (cont){
                 System.out.println("Nombre de usuario:");
-                String usuario = sc.nextLine();
-                if (parts[i] == usuario){
-                    System.out.println("Usuario repetido");
-                }else {
-                    i++;
+                usuario = sc.nextLine();
+                while(i< parts.length){
+                    if (parts[i] == usuario){
+                        System.out.println("Usuario repetido");
+                    }else {
+                        cont = false;
+                    }
                 }
             }
-
         } catch (IOException e) {
             e.printStackTrace();
         }
