@@ -45,25 +45,22 @@ public class Main2 {
 
     private static String comprobarUsuario() {
         Scanner sc = new Scanner(System.in);
-        String usuario = "";
+        String[] parts;
+        boolean repe = false;
+        System.out.println("Nombre de usuario:");
+        String usuario = sc.nextLine();
+
         try (BufferedReader reader = new BufferedReader(new FileReader("ADMIN/users.txt"))) {
             String line;
-            String[] parts = null;
             while ((line = reader.readLine()) != null) {
                 parts = line.split(":");
-            }
-            int i=0;
-            boolean cont = true;
-            while (cont){
-                System.out.println("Nombre de usuario:");
-                usuario = sc.nextLine();
-                while(i< parts.length){
-                    if (parts[i] == usuario){
-                        System.out.println("Usuario repetido");
-                    }else {
-                        cont = false;
-                    }
+                if (parts[0].equals(usuario)){
+                    System.out.println("Usuario repetido");
+                    repe = true;
                 }
+            }
+            if (repe == true){
+                usuario = comprobarUsuario();
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -73,10 +70,10 @@ public class Main2 {
 
     private static void addUserTxt(Usuario user) {
         try {
-            FileWriter writer = new FileWriter("ADMIN/users.txt", true);
-            FileOutputStream writerr = new FileOutputStream("ADMIN/users.txt");
-            writerr.write((user.usuario + ":" + user.contra + ":" + user.nombre + ":" + user.apellido + ":" +user.cuenta + ":" + user.email + ":"+ + user.saldo+"\n").getBytes());
-            writer.close();
+            FileWriter fw = new FileWriter("ADMIN/users.txt", true);
+            BufferedWriter bw = new BufferedWriter(fw);
+            bw.write((user.usuario + ":" + user.contra + ":" + user.nombre + ":" + user.apellido + ":" +user.cuenta + ":" + user.email + ":"+ + user.saldo+"\n"));
+            bw.close();
             System.out.println("Usuario guardado");
 
         } catch (Exception e) {
