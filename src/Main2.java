@@ -16,7 +16,7 @@ public class Main2 {
                         registrar();
                         break;
                     case 2:
-                        menuAcc(iniciarSesion());
+                        menuAcc();
                         break;
                     case 0:
                         System.out.println("---------------Adios-----------------");
@@ -83,6 +83,7 @@ public class Main2 {
     }
 
     private static void addUserTxt(Usuario user) {
+
         try {
             FileWriter fw = new FileWriter("ADMIN/users.txt", true);
             BufferedWriter bw = new BufferedWriter(fw);
@@ -121,7 +122,8 @@ public class Main2 {
         }
         return parts;
     }
-    private static void menuAcc(String [] userLog) {
+    private static void menuAcc() {
+        String [] userLog = iniciarSesion();
         int eleccion;
         do {
             System.out.println("JOCS ONLINE\n" + "1. Jugar\n" + "2. Gestionar jocs\n" + "3. Gestionar saldo\n" + "4. Gestionar les dades de l'usuari\n" + "0. Sortida al menú d'entrada\n");
@@ -136,7 +138,7 @@ public class Main2 {
 
                         break;
                     case 3:
-                        gestionarSaldo(userLog);
+                        userLog = gestionarSaldo(userLog);
                         break;
                     case 4:
 
@@ -148,7 +150,7 @@ public class Main2 {
             }
         } while (eleccion != 0);
     }
-    private static void gestionarSaldo(String[] userLog) {
+    private static String [] gestionarSaldo(String[] userLog) {
 
         File file = new File("ADMIN/users.txt");
         File tempFile = new File("ADMIN/users_temp.txt");
@@ -157,7 +159,7 @@ public class Main2 {
         System.out.println("Cuanto quieres añadir?");
         Scanner sc = new Scanner(System.in);
         int saldoSum = sc.nextInt();
-        saldoSum = saldoSum + Integer.parseInt(userLog[6]);
+        userLog[6] = String.valueOf(saldoSum + Integer.parseInt(userLog[6]));
 
 
         try (BufferedReader reader = new BufferedReader(new FileReader(file));
@@ -167,7 +169,7 @@ public class Main2 {
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(":");
                 if (parts[0].equals(userLog[0])) {
-                    line = userLog[0] + ":" + userLog[1]+ ":" + userLog[2]+ ":" + userLog[3]+ ":" + userLog[4]+ ":" + userLog[5]+ ":" + saldoSum;
+                    line = userLog[0] + ":" + userLog[1]+ ":" + userLog[2]+ ":" + userLog[3]+ ":" + userLog[4]+ ":" + userLog[5]+ ":" + userLog[6];
                 }
                 writer.write(line);
                 writer.newLine();
@@ -181,5 +183,6 @@ public class Main2 {
         } else {
             System.out.println("Error al editar el archivo");
         }
+        return userLog;
     }
 }
