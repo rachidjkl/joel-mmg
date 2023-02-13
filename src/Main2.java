@@ -1,5 +1,6 @@
 import java.io.*;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class Main2 {
@@ -15,7 +16,7 @@ public class Main2 {
                         registrar();
                         break;
                     case 2:
-                        //menuAcc(listUser);
+                        menuAcc(iniciarSesion());
                         break;
                     case 0:
                         System.out.println("---------------Adios-----------------");
@@ -28,10 +29,7 @@ public class Main2 {
         Usuario user = new Usuario();
         Scanner sc = new Scanner(System.in);
         user.usuario = comprobarUsuario();
-        System.out.println("Contraseña:");
-        user.contra = sc.nextLine();
-        System.out.println("Repite la contraseña:");
-        user.contraRep = sc.nextLine();
+        user.contra = comprobarContra();
         System.out.println("Nombre:");
         user.nombre = sc.nextLine();
         System.out.println("Apellidos:");
@@ -43,9 +41,25 @@ public class Main2 {
         addUserTxt(user);
     }
 
+    private static String comprobarContra() {
+        String contra;
+        String contraRep;
+        do{
+            System.out.println("Contraseña:");
+            Scanner sc = new Scanner(System.in);
+            contra = sc.nextLine();
+            System.out.println("Repite la contraseña:");
+            contraRep = sc.nextLine();
+            if(!contra.equals(contraRep)){
+                System.out.println("Contraseñas no coinciden");
+            }
+        }while(!contra.equals(contraRep));
+        contra = BlowFish.encrypt(contra);
+        return contra;
+    }
+
     private static String comprobarUsuario() {
         Scanner sc = new Scanner(System.in);
-        String[] parts;
         boolean repe = false;
         System.out.println("Nombre de usuario:");
         String usuario = sc.nextLine();
@@ -53,7 +67,7 @@ public class Main2 {
         try (BufferedReader reader = new BufferedReader(new FileReader("ADMIN/users.txt"))) {
             String line;
             while ((line = reader.readLine()) != null) {
-                parts = line.split(":");
+                String [] parts = line.split(":");
                 if (parts[0].equals(usuario)){
                     System.out.println("Usuario repetido");
                     repe = true;
@@ -80,4 +94,92 @@ public class Main2 {
             System.out.println("Error al guardar el usuario");
         }
   }
+
+    private static String[] iniciarSesion () {
+        Scanner sc = new Scanner(System.in);
+        boolean cont = true;
+        String[] parts = null;
+        System.out.println("Nombe de usuario:");
+        String usuario = sc.nextLine();
+        System.out.println("Contraseña:");
+        String contra = sc.nextLine();
+        try (BufferedReader reader = new BufferedReader(new FileReader("ADMIN/users.txt"))) {
+            String line;
+            while ((line = reader.readLine()) != null && cont==true ) {
+                parts = line.split(":");
+                if (parts[0].equals(usuario)) {
+                    if (BlowFish.comparePasswords(contra, parts[1])) {
+                        cont = false;
+                    }else{
+                        System.out.println("Nobmbre de usuario o contraseña incorrectos");
+                        parts = iniciarSesion();
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return parts;
+    }
+    private static void menuAcc(String [] userLog) {
+        int eleccion;
+        do {
+            System.out.println("JOCS ONLINE\n" + "1. Jugar\n" + "2. Gestionar jocs\n" + "3. Gestionar saldo\n" + "4. Gestionar les dades de l'usuari\n" + "0. Sortida al menú d'entrada\n");
+            Scanner sc = new Scanner(System.in);
+            eleccion = sc.nextInt();
+            {
+                switch (eleccion) {
+                    case 1:
+
+                        break;
+                    case 2:
+
+                        break;
+                    case 3:
+                        gestionarSaldo(userLog);
+                        break;
+                    case 4:
+
+                        break;
+                    case 0:
+
+                        break;
+                }
+            }
+        } while (eleccion != 0);
+    }
+    private static void gestionarSaldo(String[] userLog) {
+
+        File file = new File("ADMIN/users.txt");
+        File tempFile = new File("ADMIN/users_temp.txt");
+
+        System.out.println("Tu saldo es: " + userLog[6]);
+        System.out.println("Cuanto quieres añadir?");
+        Scanner sc = new Scanner(System.in);
+        int saldoSum = sc.nextInt();
+        saldoSum = saldoSum + Integer.parseInt(userLog[6]);
+
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(file));
+             BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile))) {
+
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(":");
+                if (parts[0].equals(userLog[0])) {
+                    line = userLog[0] + ":" + userLog[1]+ ":" + userLog[2]+ ":" + userLog[3]+ ":" + userLog[4]+ ":" + userLog[5]+ ":" + saldoSum;
+                }
+                writer.write(line);
+                writer.newLine();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        if (file.delete()) {
+            tempFile.renameTo(file);
+        } else {
+            System.out.println("Error al editar el archivo");
+        }
+    }
 }
