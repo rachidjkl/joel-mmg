@@ -1,6 +1,4 @@
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 
 public class Main2 {
@@ -135,7 +133,7 @@ public class Main2 {
 
                         break;
                     case 2:
-
+                        gestionarJuegos();
                         break;
                     case 3:
                         userLog = gestionarSaldo(userLog);
@@ -150,6 +148,11 @@ public class Main2 {
             }
         } while (eleccion != 0);
     }
+
+    private static void gestionarJuegos() {
+        
+    }
+
     private static String [] gestionarSaldo(String[] userLog) {
 
         File file = new File("ADMIN/users.txt");
