@@ -1,4 +1,5 @@
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Main2 {
@@ -150,7 +151,46 @@ public class Main2 {
     }
 
     private static void gestionarJuegos() {
-        
+
+
+        try (BufferedReader reader = new BufferedReader(new FileReader("ADMIN/games.txt"))) {
+            ArrayList<Game> games = new ArrayList<Game>();
+            String line;
+            int i = 1;
+            while ((line = reader.readLine()) != null) {
+                Game game = new Game();
+                String[] parts = line.split(":");
+                System.out.println(i+" - "+parts[0]);
+                game.nombre = parts[0];
+                game.precio = Float.parseFloat(parts[1]);
+                game.precioTa = Float.parseFloat(parts[2]);
+                games.add(game);
+                i++;
+            }
+            System.out.println("introduce numero :");
+            Scanner sc = new Scanner(System.in);
+            int eleccion = sc.nextInt();
+            menuCompra(games.get((eleccion-1)));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
+    private static void menuCompra(Game gamel) {
+        System.out.println(gamel.nombre+"\n"+"Credito: "+gamel.precio+"\n"+"Tarifa: "+gamel.precioTa);
+        System.out.println("Comprar creditos (1) o Tarifa plana (2): ");
+        Scanner sc = new Scanner(System.in);
+        int eleccion = sc.nextInt();
+        if (eleccion == 1){
+            System.out.println("numero de creditos que quieres ?");
+            int numCre = sc.nextInt();
+        }else if(eleccion == 2){
+
+        }
+
+
     }
 
     private static String [] gestionarSaldo(String[] userLog) {
