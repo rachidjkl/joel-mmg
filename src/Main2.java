@@ -95,8 +95,9 @@ public class Main2 {
         }
   }
 
-    private static String[] iniciarSesion () {
+    private static Usuario iniciarSesion () {
         Scanner sc = new Scanner(System.in);
+        Usuario user = new Usuario();
         boolean cont = true;
         String[] parts = null;
         System.out.println("Nombe de usuario:");
@@ -109,20 +110,27 @@ public class Main2 {
                 parts = line.split(":");
                 if (parts[0].equals(usuario)) {
                     if (BlowFish.comparePasswords(contra, parts[1])) {
+                        user.usuario = parts[0];
+                        user.contra = parts[1];
+                        user.nombre = parts[2];
+                        user.apellido = parts[3];
+                        user.cuenta = parts[4];
+                        user.email = parts[5];
+                        user.saldo = Integer.parseInt(parts[6]);
                         cont = false;
                     }else{
                         System.out.println("Nobmbre de usuario o contraseña incorrectos");
-                        parts = iniciarSesion();
+                        user = iniciarSesion();
                     }
                 }
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return parts;
+        return user;
     }
     private static void menuAcc() {
-        String [] userLog = iniciarSesion();
+        Usuario userLog = iniciarSesion();
         int eleccion;
         do {
             System.out.println("JOCS ONLINE\n" + "1. Jugar\n" + "2. Gestionar jocs\n" + "3. Gestionar saldo\n" + "4. Gestionar les dades de l'usuari\n" + "0. Sortida al menú d'entrada\n");
@@ -134,10 +142,10 @@ public class Main2 {
 
                         break;
                     case 2:
-                        gestionarJuegos();
+                        gestionarJuegos(userLog);
                         break;
                     case 3:
-                        userLog = gestionarSaldo(userLog);
+                        gestionarSaldo(userLog);
                         break;
                     case 4:
 
@@ -150,7 +158,7 @@ public class Main2 {
         } while (eleccion != 0);
     }
 
-    private static void gestionarJuegos() {
+    private static void gestionarJuegos(Usuario user) {
 
 
         try (BufferedReader reader = new BufferedReader(new FileReader("ADMIN/games.txt"))) {
@@ -170,7 +178,7 @@ public class Main2 {
             System.out.println("introduce numero :");
             Scanner sc = new Scanner(System.in);
             int eleccion = sc.nextInt();
-            menuCompra(games.get((eleccion-1)));
+            menuCompra(games.get((eleccion-1)), user);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -178,7 +186,7 @@ public class Main2 {
 
     }
 
-    private static void menuCompra(Game gamel) {
+    private static void menuCompra(Game gamel, Usuario user) {
         System.out.println(gamel.nombre+"\n"+"Credito: "+gamel.precio+"\n"+"Tarifa: "+gamel.precioTa);
         System.out.println("Comprar creditos (1) o Tarifa plana (2): ");
         Scanner sc = new Scanner(System.in);
@@ -186,23 +194,44 @@ public class Main2 {
         if (eleccion == 1){
             System.out.println("numero de creditos que quieres ?");
             int numCre = sc.nextInt();
+            float saldoRestar = numCre * gamel.precio;
+            if(saldoRestar<= user.saldo){
+                user.saldo = user.saldo - saldoRestar;
+                guardarCambios(gamel, user, numCre);
+            }else {
+                System.out.println("saldo insuficiente");
+            }
         }else if(eleccion == 2){
 
-        }
 
+        }
+    }
+
+    private static void guardarCambios(Game gamel, Usuario user, int numCre) {
+
+        try {
+            FileWriter fw = new FileWriter("ADMIN/userGame.txt", true);
+            BufferedWriter bw = new BufferedWriter(fw);
+            bw.write((user.usuario + ":" + gamel.nombre + ":" + numCre + "\n"));
+            bw.close();
+            System.out.println("Juego añadido al usuario");
+
+        } catch (Exception e) {
+            System.out.println("Error al guardar el usuario");
+        }
 
     }
 
-    private static String [] gestionarSaldo(String[] userLog) {
+    private static void gestionarSaldo(Usuario userLog) {
 
         File file = new File("ADMIN/users.txt");
         File tempFile = new File("ADMIN/users_temp.txt");
 
-        System.out.println("Tu saldo es: " + userLog[6]);
+        System.out.println("Tu saldo es: " + userLog.saldo);
         System.out.println("Cuanto quieres añadir?");
         Scanner sc = new Scanner(System.in);
         int saldoSum = sc.nextInt();
-        userLog[6] = String.valueOf(saldoSum + Integer.parseInt(userLog[6]));
+        userLog.saldo = saldoSum + userLog.saldo;
 
 
         try (BufferedReader reader = new BufferedReader(new FileReader(file));
@@ -211,8 +240,8 @@ public class Main2 {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(":");
-                if (parts[0].equals(userLog[0])) {
-                    line = userLog[0] + ":" + userLog[1]+ ":" + userLog[2]+ ":" + userLog[3]+ ":" + userLog[4]+ ":" + userLog[5]+ ":" + userLog[6];
+                if (parts[0].equals(userLog.usuario)) {
+                    line = userLog.usuario + ":" + userLog.contra+ ":" + userLog.nombre+ ":" + userLog.apellido+ ":" + userLog.cuenta+ ":" + userLog.email+ ":" + userLog.saldo;
                 }
                 writer.write(line);
                 writer.newLine();
@@ -226,6 +255,5 @@ public class Main2 {
         } else {
             System.out.println("Error al editar el archivo");
         }
-        return userLog;
     }
 }

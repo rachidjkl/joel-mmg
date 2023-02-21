@@ -8,5 +8,5 @@ public class Usuario implements Serializable {
     String apellido;
     String cuenta;
     String email;
-    int saldo = 0;
+    float saldo = 0;
 }

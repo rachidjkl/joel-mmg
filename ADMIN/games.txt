@@ -1,3 +1,3 @@
-Minecraft:2.3:10
-Roblox:0.6:25
-Valorant:0.4:20
+Minecraft:2:10
+Roblox:1:25
+Valorant:3:20
