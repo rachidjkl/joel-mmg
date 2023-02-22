@@ -116,7 +116,7 @@ public class Main2 {
                         user.apellido = parts[3];
                         user.cuenta = parts[4];
                         user.email = parts[5];
-                        user.saldo = Integer.parseInt(parts[6]);
+                        user.saldo = Float.parseFloat(parts[6]);
                         cont = false;
                     }else{
                         System.out.println("Nobmbre de usuario o contraseña incorrectos");
@@ -139,6 +139,7 @@ public class Main2 {
             {
                 switch (eleccion) {
                     case 1:
+                        System.out.println(userLog.saldo);
 
                         break;
                     case 2:
@@ -197,7 +198,7 @@ public class Main2 {
             float saldoRestar = numCre * gamel.precio;
             if(saldoRestar<= user.saldo){
                 user.saldo = user.saldo - saldoRestar;
-                guardarCambios(gamel, user, numCre);
+                guardarCambiosJuegos(gamel, user, numCre);
             }else {
                 System.out.println("saldo insuficiente");
             }
@@ -207,18 +208,47 @@ public class Main2 {
         }
     }
 
-    private static void guardarCambios(Game gamel, Usuario user, int numCre) {
+    private static void guardarCambiosJuegos(Game gamel, Usuario user, int numCre) {
 
+        File file = new File("ADMIN/userGame.txt");
+        File tempFile = new File("ADMIN/userGame_temp.txt");
+        boolean nuevo = true;
         try {
-            FileWriter fw = new FileWriter("ADMIN/userGame.txt", true);
+            FileWriter fw = new FileWriter(tempFile);
+            FileReader fr = new FileReader(file);
             BufferedWriter bw = new BufferedWriter(fw);
-            bw.write((user.usuario + ":" + gamel.nombre + ":" + numCre + "\n"));
-            bw.close();
-            System.out.println("Juego añadido al usuario");
+            BufferedReader br = new BufferedReader(fr);
 
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] parts = line.split(":");
+                if (parts[0].equals(user.usuario) && parts[1].equals(gamel.nombre)) {
+                    int aux = Integer.parseInt(parts[2] + numCre);
+                    line = user.usuario + ":" + gamel.nombre + ":" + aux;
+                    nuevo = false;
+                }else if (parts[0].equals(user.usuario)){
+                    bw.write(user.usuario + ":" + gamel.nombre + ":" + numCre);
+                    bw.newLine();
+                    nuevo = false;
+                }
+                bw.write(line);
+                bw.newLine();
+            }
+            if (nuevo){
+                bw.write(user.usuario + ":" + gamel.nombre + ":" + numCre);
+            }
+            bw.close();
+            br.close();
+            System.out.println("Juego añadido al usuario");
         } catch (Exception e) {
             System.out.println("Error al guardar el usuario");
         }
+        if (file.delete()) {
+            tempFile.renameTo(file);
+        } else {
+            System.out.println("Error al editar el archivo");
+        }
+
 
     }
 
