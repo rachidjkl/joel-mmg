@@ -272,7 +272,7 @@ public class Main2 {
                     line = user.usuario + ":" + gamel.nombre + ":" + aux + ":" + parts[3];
                     nuevo = false;
                 }else if (parts[0].equals(user.usuario)){
-                    bw.write(user.usuario + ":" + gamel.nombre + ":" + numCre+":"+parts[3]);
+                    line = (user.usuario + ":" + gamel.nombre + ":" + numCre+":"+parts[3]);
                     bw.newLine();
                     nuevo = false;
                 }
