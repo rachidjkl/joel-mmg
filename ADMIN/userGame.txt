@@ -1,3 +1,7 @@
-qw:Minecraft:3
-qw:Roblox:8213
-fg:Roblox:3
+qw:Valorant:0:S
+qw:Minecraft:0:T
+qw:Roblox:8:T
+fg:Minecraft:40:T
+fg:Roblox:3:T
+fg:Minecraft:40:T
+mario:Minecraft:10:T

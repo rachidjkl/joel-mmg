@@ -193,19 +193,64 @@ public class Main2 {
         Scanner sc = new Scanner(System.in);
         int eleccion = sc.nextInt();
         if (eleccion == 1){
-            System.out.println("numero de creditos que quieres ?");
+            System.out.println("numero de partidas que quieres ?");
             int numCre = sc.nextInt();
             float saldoRestar = numCre * gamel.precio;
             if(saldoRestar<= user.saldo){
                 user.saldo = user.saldo - saldoRestar;
+                actualizarUser(user);
                 guardarCambiosJuegos(gamel, user, numCre);
             }else {
                 System.out.println("saldo insuficiente");
             }
         }else if(eleccion == 2){
 
+            if(user.saldo>= gamel.precioTa) {
+                user.saldo = user.saldo - gamel.precioTa;
+                actualizarUser(user);
+                guardarTarifaJuegos(gamel, user);
+            }else {
+                System.out.println("saldo insuficiente");
+            }
 
         }
+    }
+
+    private static void guardarTarifaJuegos(Game gamel, Usuario user) {
+
+        File file = new File("ADMIN/userGame.txt");
+        File tempFile = new File("ADMIN/userGame_temp.txt");
+        try {
+            FileWriter fw = new FileWriter(tempFile);
+            FileReader fr = new FileReader(file);
+            BufferedWriter bw = new BufferedWriter(fw);
+            BufferedReader br = new BufferedReader(fr);
+            boolean escrita = false;
+
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] parts = line.split(":");
+                if (parts[0].equals(user.usuario) && parts[1].equals(gamel.nombre) && parts[3].equals("S")) {
+                    line = user.usuario + ":" + gamel.nombre + ":" + parts[2] +":"+ "T";
+                    escrita = true;
+                }
+                bw.write(line);
+                bw.newLine();
+            }
+            if (!escrita){
+                bw.write(user.usuario + ":" + gamel.nombre + ":" + "0" +":"+ "T");
+            }
+            bw.close();
+            br.close();
+        }catch (Exception e) {
+            System.out.println("Error al guardar el usuario");
+        }
+        if (file.delete()) {
+            tempFile.renameTo(file);
+        } else {
+            System.out.println("Error al editar el archivo");
+        }
+
     }
 
     private static void guardarCambiosJuegos(Game gamel, Usuario user, int numCre) {
@@ -223,11 +268,11 @@ public class Main2 {
             while ((line = br.readLine()) != null) {
                 String[] parts = line.split(":");
                 if (parts[0].equals(user.usuario) && parts[1].equals(gamel.nombre)) {
-                    int aux = Integer.parseInt(parts[2] + numCre);
-                    line = user.usuario + ":" + gamel.nombre + ":" + aux;
+                    int aux = Integer.parseInt(parts[2])+numCre;
+                    line = user.usuario + ":" + gamel.nombre + ":" + aux + ":" + parts[3];
                     nuevo = false;
                 }else if (parts[0].equals(user.usuario)){
-                    bw.write(user.usuario + ":" + gamel.nombre + ":" + numCre);
+                    bw.write(user.usuario + ":" + gamel.nombre + ":" + numCre+":"+parts[3]);
                     bw.newLine();
                     nuevo = false;
                 }
@@ -235,7 +280,7 @@ public class Main2 {
                 bw.newLine();
             }
             if (nuevo){
-                bw.write(user.usuario + ":" + gamel.nombre + ":" + numCre);
+                bw.write(user.usuario + ":" + gamel.nombre + ":" + numCre+":"+"S");
             }
             bw.close();
             br.close();
@@ -248,22 +293,20 @@ public class Main2 {
         } else {
             System.out.println("Error al editar el archivo");
         }
-
-
     }
 
     private static void gestionarSaldo(Usuario userLog) {
-
-        File file = new File("ADMIN/users.txt");
-        File tempFile = new File("ADMIN/users_temp.txt");
-
         System.out.println("Tu saldo es: " + userLog.saldo);
         System.out.println("Cuanto quieres añadir?");
         Scanner sc = new Scanner(System.in);
         int saldoSum = sc.nextInt();
         userLog.saldo = saldoSum + userLog.saldo;
+        actualizarUser(userLog);
 
-
+    }
+    private static void actualizarUser(Usuario userLog ){
+        File file = new File("ADMIN/users.txt");
+        File tempFile = new File("ADMIN/users_temp.txt");
         try (BufferedReader reader = new BufferedReader(new FileReader(file));
              BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile))) {
 
@@ -285,5 +328,14 @@ public class Main2 {
         } else {
             System.out.println("Error al editar el archivo");
         }
+    }
+    private static void cambiarAtributos(Usuario user){
+        System.out.println("que quieres cambiar?");
+        System.out.println("1-Nombre de usuario: "+user.usuario);
+        System.out.println("2-Contraseña");
+        System.out.println("3-Nombre: "+user.nombre);
+        System.out.println("4-Apellidos: "+user.apellido);
+        System.out.println("5-email: "+user.email);
+        System.out.println("6-cuenta");
     }
 }
