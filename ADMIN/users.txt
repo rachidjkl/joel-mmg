@@ -3,4 +3,4 @@ qw:CanP02T66aQ=:qw:qw:qw:qw:328.0
 lo:OLU2DHee/oA=:lo:lo:lo:lo:0.0
 fg:/zjY6tRuBbg=:fg:fg:fg:fg:696.0
 vb:NwWxSGKk+rk=:vb:vb:vb:vb:0.0
-mario:Xca4VtH1GWc=:ma:1:1:1:100.0
+mario:Xca4VtH1GWc=:ma:1:1:1:60.0

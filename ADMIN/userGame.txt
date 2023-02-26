@@ -2,4 +2,4 @@ qw:Valorant:0:S
 qw:Minecraft:0:T
 qw:Roblox:8:T
 fg:Minecraft:80:T
-mario:Minecraft:10:T
+mario:Valorant:5:T
