@@ -1,5 +1,8 @@
-qw:Valorant:0:S
-qw:Minecraft:0:T
-qw:Roblox:8:T
+qw:Valorant:5:S
+qw:Minecraft:5:T
+qw:Roblox:5:T
 fg:Minecraft:80:T
 mario:Valorant:5:T
+lo:Minecraft:6:T
+lo:Roblox:5:T
+lo:Minecraft:11:S

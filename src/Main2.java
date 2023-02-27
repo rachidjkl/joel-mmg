@@ -118,11 +118,12 @@ public class Main2 {
                         user.email = parts[5];
                         user.saldo = Float.parseFloat(parts[6]);
                         cont = false;
-                    }else{
-                        System.out.println("Nobmbre de usuario o contraseña incorrectos");
-                        user = iniciarSesion();
                     }
                 }
+            }
+            if (cont){
+                System.out.println("Nobmbre de usuario o contraseña incorrectos");
+                user = iniciarSesion();
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -136,26 +137,26 @@ public class Main2 {
             System.out.println("JOCS ONLINE\n" + "1. Jugar\n" + "2. Gestionar jocs\n" + "3. Gestionar saldo\n" + "4. Gestionar les dades de l'usuari\n" + "0. Sortida al menú d'entrada\n");
             Scanner sc = new Scanner(System.in);
             eleccion = sc.nextInt();
-            {
-                switch (eleccion) {
-                    case 1:
-                        System.out.println(userLog.saldo);
 
-                        break;
-                    case 2:
-                        gestionarJuegos(userLog);
-                        break;
-                    case 3:
-                        gestionarSaldo(userLog);
-                        break;
-                    case 4:
+            switch (eleccion) {
+                case 1:
+                    System.out.println(userLog.saldo);
 
-                        break;
-                    case 0:
+                    break;
+                case 2:
+                    gestionarJuegos(userLog);
+                    break;
+                case 3:
+                    gestionarSaldo(userLog);
+                    break;
+                case 4:
+                    cambiarAtributos(userLog);
+                    break;
+                case 0:
 
-                        break;
-                }
+                    break;
             }
+
         } while (eleccion != 0);
     }
 
@@ -198,7 +199,7 @@ public class Main2 {
             float saldoRestar = numCre * gamel.precio;
             if(saldoRestar<= user.saldo){
                 user.saldo = user.saldo - saldoRestar;
-                actualizarUser(user);
+                actualizarUser(user, user);
                 guardarCambiosJuegos(gamel, user, numCre);
             }else {
                 System.out.println("saldo insuficiente");
@@ -207,7 +208,7 @@ public class Main2 {
 
             if(user.saldo>= gamel.precioTa) {
                 user.saldo = user.saldo - gamel.precioTa;
-                actualizarUser(user);
+                actualizarUser(user, user);
                 guardarTarifaJuegos(gamel, user);
             }else {
                 System.out.println("saldo insuficiente");
@@ -232,6 +233,10 @@ public class Main2 {
                 String[] parts = line.split(":");
                 if (parts[0].equals(user.usuario) && parts[1].equals(gamel.nombre) && parts[3].equals("S")) {
                     line = user.usuario + ":" + gamel.nombre + ":" + parts[2] +":"+ "T";
+                    escrita = true;
+                }else if (parts[0].equals(user.usuario) && parts[1].equals(gamel.nombre) && parts[3].equals("T")){
+                    System.out.println("ya tienes targeta plana");
+                    user.saldo = user.saldo + gamel.precioTa;
                     escrita = true;
                 }
                 bw.write(line);
@@ -272,8 +277,7 @@ public class Main2 {
                     line = user.usuario + ":" + gamel.nombre + ":" + aux + ":" + parts[3];
                     nuevo = false;
                 }else if (parts[0].equals(user.usuario)){
-                    line = (user.usuario + ":" + gamel.nombre + ":" + numCre+":"+parts[3]);
-                    bw.newLine();
+                    line = (user.usuario + ":" + parts[1] + ":" + numCre+":"+parts[3]);
                     nuevo = false;
                 }
                 bw.write(line);
@@ -301,10 +305,10 @@ public class Main2 {
         Scanner sc = new Scanner(System.in);
         int saldoSum = sc.nextInt();
         userLog.saldo = saldoSum + userLog.saldo;
-        actualizarUser(userLog);
+        actualizarUser(userLog, userLog);
 
     }
-    private static void actualizarUser(Usuario userLog ){
+    private static void actualizarUser(Usuario userLog, Usuario aux ){
         File file = new File("ADMIN/users.txt");
         File tempFile = new File("ADMIN/users_temp.txt");
         try (BufferedReader reader = new BufferedReader(new FileReader(file));
@@ -314,7 +318,7 @@ public class Main2 {
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(":");
                 if (parts[0].equals(userLog.usuario)) {
-                    line = userLog.usuario + ":" + userLog.contra+ ":" + userLog.nombre+ ":" + userLog.apellido+ ":" + userLog.cuenta+ ":" + userLog.email+ ":" + userLog.saldo;
+                    line = aux.usuario + ":" + aux.contra+ ":" + aux.nombre+ ":" + aux.apellido+ ":" + aux.cuenta+ ":" + aux.email+ ":" + aux.saldo;
                 }
                 writer.write(line);
                 writer.newLine();
@@ -330,6 +334,15 @@ public class Main2 {
         }
     }
     private static void cambiarAtributos(Usuario user){
+        Scanner sc = new Scanner(System.in);
+        Usuario aux = new Usuario();
+        aux.usuario = user.usuario;
+        aux.contra = user.contra;
+        aux.nombre = user.nombre;
+        aux.apellido = user.apellido;
+        aux.email = user.email;
+        aux.cuenta = user.cuenta;
+
         System.out.println("que quieres cambiar?");
         System.out.println("1-Nombre de usuario: "+user.usuario);
         System.out.println("2-Contraseña");
@@ -337,5 +350,35 @@ public class Main2 {
         System.out.println("4-Apellidos: "+user.apellido);
         System.out.println("5-email: "+user.email);
         System.out.println("6-cuenta");
+        int eleccion = sc.nextInt();
+        switch (eleccion){
+            case 1:
+                aux.usuario = comprobarUsuario();
+                break;
+            case 2:
+                aux.contra = comprobarContra();
+                break;
+            case 3:
+                System.out.println("Nuevo nombre: ");
+                String auxx = sc.nextLine();
+                aux.nombre = auxx;
+                break;
+            case 4:
+                System.out.println("Nuevo apellido: ");
+                auxx = sc.nextLine();
+                aux.apellido = auxx;
+                break;
+            case 5:
+                System.out.println("Nuevo email: ");
+                auxx = sc.nextLine();
+                aux.email = auxx;
+                break;
+            case 6:
+                System.out.println("Nueva cuenta: ");
+                auxx = sc.nextLine();
+                aux.cuenta = auxx;
+                break;
+        }
+        actualizarUser(user, aux);
     }
 }
