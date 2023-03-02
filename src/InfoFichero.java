@@ -1,5 +1,8 @@
 import java.io.*;
 import java.sql.SQLOutput;
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 public class InfoFichero {
@@ -26,6 +29,9 @@ public class InfoFichero {
 
         File file = new File("ADMIN/userGame.txt");
         File tempFile = new File("ADMIN/userGame_temp.txt");
+        LocalDate fechaActual = LocalDate.now();
+        DateTimeFormatter formateador = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        String fechaComoCadena = fechaActual.format(formateador);
         try {
             FileWriter fw = new FileWriter(tempFile);
             FileReader fr = new FileReader(file);
@@ -37,10 +43,10 @@ public class InfoFichero {
             while ((line = br.readLine()) != null) {
                 String[] parts = line.split(":");
                 if (parts[0].equals(user.usuario) && parts[1].equals(gamel.nombre) && parts[3].equals("S")) {
-                    line = user.usuario + ":" + gamel.nombre + ":" + parts[2] +":"+ "T";
+                    line = user.usuario + ":" + gamel.nombre + ":" + parts[2] +":"+ "T"+":"+fechaComoCadena;
                     escrita = true;
                 }else if (parts[0].equals(user.usuario) && parts[1].equals(gamel.nombre) && parts[3].equals("T")){
-                    System.out.println("ya tienes targeta plana");
+                    System.out.println("Tienes targeta plana");
                     user.saldo = user.saldo + gamel.precioTa;
                     escrita = true;
                 }
@@ -48,7 +54,7 @@ public class InfoFichero {
                 bw.newLine();
             }
             if (!escrita){
-                bw.write(user.usuario + ":" + gamel.nombre + ":" + "0" +":"+ "T");
+                bw.write(user.usuario + ":" + gamel.nombre + ":" + "0" +":"+ "T"+":"+fechaComoCadena);
             }
             bw.close();
             br.close();
@@ -78,17 +84,17 @@ public class InfoFichero {
                 String[] parts = line.split(":");
                 if (parts[0].equals(user.usuario) && parts[1].equals(gamel.nombre)) {
                     int aux = Integer.parseInt(parts[2])+numCre;
-                    line = user.usuario + ":" + gamel.nombre + ":" + aux + ":" + parts[3];
+                    line = user.usuario + ":" + gamel.nombre + ":" + aux + ":" + parts[3]+":"+ parts[4];
                     nuevo = false;
                 }else if (parts[0].equals(user.usuario)){
-                    line = (user.usuario + ":" + parts[1] + ":" + numCre+":"+parts[3]);
+                    line = (user.usuario + ":" + parts[1] + ":" + numCre+":"+parts[3]+":"+ parts[4]);
                     nuevo = false;
                 }
                 bw.write(line);
                 bw.newLine();
             }
             if (nuevo){
-                bw.write(user.usuario + ":" + gamel.nombre + ":" + numCre+":"+"S");
+                bw.write(user.usuario + ":" + gamel.nombre + ":" + numCre+":"+"S"+":0");
             }
             bw.close();
             br.close();
@@ -130,6 +136,7 @@ public class InfoFichero {
     }
 
     public static void jugar(Usuario user) {
+
         System.out.println("Que quiere jugar ?");
         ArrayList<Game> games = mostrarJuegos();
         System.out.println("introduce numero :");
@@ -140,7 +147,6 @@ public class InfoFichero {
         File file = new File("ADMIN/userGame.txt");
         File tempFile = new File("ADMIN/userGame_temp.txt");
 
-        boolean nuevo = true;
         try {
             FileWriter fw = new FileWriter(tempFile);
             FileReader fr = new FileReader(file);
@@ -150,31 +156,51 @@ public class InfoFichero {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] parts = line.split(":");
-                if (parts[0].equals(user.usuario) && parts[1].equals(gamel.nombre) && parts[3].equals("T")) {
+                int partidas = Integer.parseInt(parts[2]);
+                if (parts[0].equals(user.usuario) && parts[1].equals(gamel.nombre) && parts[3].equals("T")){
+                    if(comprobarFecha(parts[4])){
+                        line = user.usuario + ":" + gamel.nombre + ":" + parts[2] +":"+ "S"+":0";
+                    }else{
+                        System.out.println("JUGANDO:::::::::::::::");
+                    }
+
+                }
+                else if (parts[0].equals(user.usuario) && parts[1].equals(gamel.nombre) && partidas > 0){
+                    line = (user.usuario + ":" + parts[1] + ":" + (partidas-1) +":"+parts[3]);
+                    System.out.println("Te quedan "+(partidas-1)+" partias");
                     System.out.println("JUGANDO:::::::::::::::");
-//                    int aux = Integer.parseInt(parts[2])+numCre;
-//                    line = user.usuario + ":" + gamel.nombre + ":" + aux + ":" + parts[3];
-//                    nuevo = false;
-                }else if (parts[0].equals(user.usuario)){
-                    line = (user.usuario + ":" + parts[1] + ":" + numCre+":"+parts[3]);
-                    nuevo = false;
                 }
                 bw.write(line);
                 bw.newLine();
             }
-            if (nuevo){
-                bw.write(user.usuario + ":" + gamel.nombre + ":" + numCre+":"+"S");
-            }
             bw.close();
             br.close();
-            System.out.println("Juego añadido al usuario");
         } catch (Exception e) {
             System.out.println("Error al guardar el usuario");
         }
-
-
-
+        if (file.delete()) {
+            tempFile.renameTo(file);
+        } else {
+            System.out.println("Error al editar el archivo");
+        }
     }
+
+    private static boolean comprobarFecha(String fechaCompra) {
+
+        boolean mes = false;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        LocalDate fechaEjemplo = LocalDate.parse(fechaCompra, formatter);
+        LocalDate fechaActual = LocalDate.now();
+
+        Period periodo = Period.between(fechaEjemplo, fechaActual);
+        int mesesTranscurridos = periodo.getMonths();
+
+        if (mesesTranscurridos >= 1) {
+            mes = true;
+        }
+        return mes;
+    }
+
     public static ArrayList<Game> mostrarJuegos(){
         ArrayList<Game> games = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader("ADMIN/games.txt"))) {
