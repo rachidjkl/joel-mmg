@@ -10,7 +10,7 @@ public class InfoFichero {
         ArrayList<Game> games = mostrarJuegos();
         System.out.println("introduce numero :");
         int eleccion = Keyboard.readInt();
-        if ((eleccion-1) < games.size() ){
+        if ((eleccion-1) < games.size() && eleccion > 0){
             Menus.menuCompra(games.get((eleccion-1)), user);
         }else{
             System.out.println("Valor no valido");
