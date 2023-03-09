@@ -94,11 +94,30 @@ public class Main2 {
     }
 
     static void gestionarSaldo(Usuario userLog) {
-        System.out.println("Tu saldo es: " + userLog.saldo);
-        System.out.println("Cuanto quieres añadir?");
-        int saldoSum = Keyboard.readInt();
-        if (saldoSum>0){
-            userLog.saldo = saldoSum + userLog.saldo;
+        System.out.println("Añadir(1) o Retirar(2)");
+        int eleccion = Keyboard.readInt();
+        if(eleccion == 1){
+            retirar(userLog);
+        }else{
+            System.out.println("Tu saldo es: " + userLog.saldo);
+            System.out.println("Cuanto quieres añadir?");
+            int saldoSum = Keyboard.readInt();
+            if (saldoSum>0){
+                userLog.saldo = saldoSum + userLog.saldo;
+                InfoFichero.actualizarUser(userLog, userLog);
+            }else{
+                System.out.println("Valor no valido");
+            }
+        }
+
+    }
+
+    private static void retirar(Usuario userLog) {
+        System.out.println("Tu saldo es "+ userLog.saldo);
+        System.out.println("cuanto quieres retirar:");
+        int retirar = Keyboard.readInt();
+        if (userLog.saldo>=retirar && retirar > 0){
+            userLog.saldo = userLog.saldo - retirar;
             InfoFichero.actualizarUser(userLog, userLog);
         }else{
             System.out.println("Valor no valido");
