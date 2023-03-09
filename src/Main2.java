@@ -1,3 +1,5 @@
+import org.mindrot.jbcrypt.BCrypt;
+
 import java.io.*;
 import java.util.ArrayList;
 
@@ -32,7 +34,7 @@ public class Main2 {
                 System.out.println("Contraseñas no coinciden");
             }
         }while(!contra.equals(contraRep));
-        contra = BlowFish.encrypt(contra);
+        contra = BCrypt.hashpw(contra, BCrypt.gensalt(12));
         return contra;
     }
 
@@ -72,7 +74,7 @@ public class Main2 {
             while ((line = reader.readLine()) != null && cont==true ) {
                 parts = line.split(":");
                 if (parts[0].equals(usuario)) {
-                    if (BlowFish.comparePasswords(contra, parts[1])) {
+                    if (BCrypt.checkpw(contra, parts[1])) {
                         user.usuario = parts[0];
                         user.contra = parts[1];
                         user.nombre = parts[2];
