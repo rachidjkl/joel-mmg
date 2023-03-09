@@ -19,6 +19,9 @@ public class Menus {
                     case 0:
                         System.out.println("---------------Adios-----------------");
                         break;
+                    default:
+                        System.out.println("Valor no valido");
+                        break;
                 }
             }
         } while (eleccion != 0);
@@ -48,6 +51,9 @@ public class Menus {
                 case 0:
 
                     break;
+                default:
+                    System.out.println("Valor no valido");
+                    break;
             }
 
         } while (eleccion != 0);
@@ -76,7 +82,8 @@ public class Menus {
             }else {
                 System.out.println("saldo insuficiente");
             }
-
+        }else{
+            System.out.println("Valor no valido");
         }
     }
 }

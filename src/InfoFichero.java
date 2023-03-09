@@ -10,7 +10,12 @@ public class InfoFichero {
         ArrayList<Game> games = mostrarJuegos();
         System.out.println("introduce numero :");
         int eleccion = Keyboard.readInt();
-        Menus.menuCompra(games.get((eleccion-1)), user);
+        if ((eleccion-1) < games.size() ){
+            Menus.menuCompra(games.get((eleccion-1)), user);
+        }else{
+            System.out.println("Valor no valido");
+        }
+
     }
     static void addUserTxt(Usuario user) {
 
@@ -141,47 +146,51 @@ public class InfoFichero {
         ArrayList<Game> games = mostrarJuegos();
         System.out.println("introduce numero :");
         int eleccion = Keyboard.readInt();
-        Game gamel=games.get((eleccion-1));
+        if ((eleccion-1) < games.size() && eleccion>0){
+            Game gamel=games.get((eleccion-1));
 
 
-        File file = new File("ADMIN/userGame.txt");
-        File tempFile = new File("ADMIN/userGame_temp.txt");
+            File file = new File("ADMIN/userGame.txt");
+            File tempFile = new File("ADMIN/userGame_temp.txt");
 
-        try {
-            FileWriter fw = new FileWriter(tempFile);
-            FileReader fr = new FileReader(file);
-            BufferedWriter bw = new BufferedWriter(fw);
-            BufferedReader br = new BufferedReader(fr);
+            try {
+                FileWriter fw = new FileWriter(tempFile);
+                FileReader fr = new FileReader(file);
+                BufferedWriter bw = new BufferedWriter(fw);
+                BufferedReader br = new BufferedReader(fr);
 
-            String line;
-            while ((line = br.readLine()) != null) {
-                String[] parts = line.split(":");
-                int partidas = Integer.parseInt(parts[2]);
-                if (parts[0].equals(user.usuario) && parts[1].equals(gamel.nombre) && parts[3].equals("T")){
-                    if(comprobarFecha(parts[4])){
-                        line = user.usuario + ":" + gamel.nombre + ":" + parts[2] +":"+ "S"+":0";
-                    }else{
+                String line;
+                while ((line = br.readLine()) != null) {
+                    String[] parts = line.split(":");
+                    int partidas = Integer.parseInt(parts[2]);
+                    if (parts[0].equals(user.usuario) && parts[1].equals(gamel.nombre) && parts[3].equals("T")){
+                        if(comprobarFecha(parts[4])){
+                            line = user.usuario + ":" + gamel.nombre + ":" + parts[2] +":"+ "S"+":0";
+                        }else{
+                            System.out.println("JUGANDO:::::::::::::::");
+                        }
+
+                    }
+                    else if (parts[0].equals(user.usuario) && parts[1].equals(gamel.nombre) && partidas > 0){
+                        line = (user.usuario + ":" + parts[1] + ":" + (partidas-1) +":"+parts[3]);
+                        System.out.println("Te quedan "+(partidas-1)+" partias");
                         System.out.println("JUGANDO:::::::::::::::");
                     }
-
+                    bw.write(line);
+                    bw.newLine();
                 }
-                else if (parts[0].equals(user.usuario) && parts[1].equals(gamel.nombre) && partidas > 0){
-                    line = (user.usuario + ":" + parts[1] + ":" + (partidas-1) +":"+parts[3]);
-                    System.out.println("Te quedan "+(partidas-1)+" partias");
-                    System.out.println("JUGANDO:::::::::::::::");
-                }
-                bw.write(line);
-                bw.newLine();
+                bw.close();
+                br.close();
+            } catch (Exception e) {
+                System.out.println("Error al guardar el usuario");
             }
-            bw.close();
-            br.close();
-        } catch (Exception e) {
-            System.out.println("Error al guardar el usuario");
-        }
-        if (file.delete()) {
-            tempFile.renameTo(file);
-        } else {
-            System.out.println("Error al editar el archivo");
+            if (file.delete()) {
+                tempFile.renameTo(file);
+            } else {
+                System.out.println("Error al editar el archivo");
+            }
+        }else {
+            System.out.println("valor no valido");
         }
     }
 
